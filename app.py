@@ -4,10 +4,12 @@ from flask_hashing import Hashing
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String, Text, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:7887@localhost/makdb"
+#app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:7887@localhost/makdb"
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:@localhost/makdb"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
 bootstrap = Bootstrap5(app)
@@ -18,14 +20,16 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
+migrate = Migrate(app, db)
+
 hashing = Hashing(app)
 
 class Profile(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, unique=True)
-    firstname: Mapped[str]
-    lastname: Mapped[str]
-    username: Mapped[str] = mapped_column(unique=True)
-    password: Mapped[str]
+    firstname: Mapped[str] = mapped_column(String(100))
+    lastname: Mapped[str] = mapped_column(String(100))
+    username: Mapped[str] = mapped_column(String(25), unique=True)
+    password: Mapped[str] = mapped_column(String(255))
  
     posts = relationship("Post", back_populates="profile", cascade="all, delete-orphan")
 
@@ -38,7 +42,7 @@ class Profile(db.Model):
 class Post(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, unique=True)
     profile_id: Mapped[int] = mapped_column(ForeignKey("profile.id"), primary_key=True)
-    title: Mapped[str]
+    title: Mapped[str] = mapped_column(String(100))
     content: Mapped[str] = mapped_column(Text)
 
     profile = relationship("Profile", back_populates="posts")
