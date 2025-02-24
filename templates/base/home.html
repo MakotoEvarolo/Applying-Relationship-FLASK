@@ -1,0 +1,29 @@
+{% extends "base/layout.html" %}
+{% block title %} Home {% endblock %}
+{% block content %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>Username</th>
+                <th>View</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for profile in profiles %}
+            <tr>
+                <td>{{ profile.firstname }}</td>
+                <td>{{ profile.lastname }}</td>
+                <td>{{ profile.username }}</td>
+                <td><a class="btn btn-primary" href="{{ url_for('read', id=profile.id) }}">View</a></td>
+                <td><a class="btn btn-warning" href="{{ url_for('update', id=profile.id) }}">Edit</a></td>
+                <td><a class="btn btn-danger" href="{{ url_for('remove', id=profile.id) }}">Delete</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a class="btn btn-success" href="{{ url_for('create') }}">Create</a>
+{% endblock %}
